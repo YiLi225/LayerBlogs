@@ -1,0 +1,47 @@
+# Fraud Detection Project Example
+#
+# Any directory that includes a `dataset.yml` will be treated as a dataset
+# project. In this `yaml` file, we define the attributes of our
+# featureset.
+
+apiVersion: 1
+
+type: featureset
+
+name: "transaction_features"
+description: "Transaction features extracted from transaction logs"
+
+features:
+  - name: error_balance_dest
+    description: "Errors in the destination accounts"
+    source: error_balance_dest.sql
+  - name: error_balance_orig
+    description: "Errors in the originating accounts"
+    source: error_balance_orig.sql
+  - name: is_fraud
+    description: "Identifies whether the transaction flagged as fraud or not"
+    source: is_fraud.sql
+  - name: new_balance_dest
+    description: "Destination balance status after transaction"
+    source: new_balance_dest.sql
+  - name: new_balance_orig
+    description: "Originating balance status after transaction"
+    source: new_balance_orig.sql
+  - name: old_balance_dest
+    description: "Destination balance status before transaction"
+    source: old_balance_dest.sql
+  - name: old_balance_orig
+    description: "Originating balance status before transaction"
+    source: old_balance_orig.sql
+  - name: type
+    description: "Type of the transaction (TRANSFER=0, CASH_OUT=1, CASH_IN=2,
+     DEBIT=3, PAYMENT=4)"
+    source: type.sql
+
+schema:
+  # All of the features above should include this primary key. It will be used to join the features
+  # together.
+  primary_keys: ["transactionId"]
+
+materializations:
+  - target: layer

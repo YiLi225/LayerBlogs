@@ -1,0 +1,18 @@
+# Keras Fscore with Layer 
+#
+# In this file, we will integrate a source table from the Layer Demo
+# Snowflake database. This source table is the Synthetic Financial
+# Datasets For Fraud Detection from Kaggle
+# See here: https://www.kaggle.com/ntnu-testimon/paysim1
+
+apiVersion: 1
+
+# Unique name of this dataset which will be used in this project to
+# refer to this dataset
+name: "transactions"
+type: source
+
+materializations:
+  - type: table
+    target: layer
+    table_name: "transactions_log"
