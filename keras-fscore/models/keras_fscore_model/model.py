@@ -1,9 +1,4 @@
-"""Fraud Detection Project Example
-
-This file demonstrates how we can develop and train our model by using the
-`transaction_features` we've developed earlier. Every ML model project
-should have a definition file like this one.
-
+"""Macro F1score in Keras
 """
 from typing import Any
 from sklearn.model_selection import train_test_split
@@ -57,76 +52,7 @@ def train_model(train: Train, tf: Featureset("transaction_features")) -> Any:
     """
 
     # We create the training and label data
-    train_df = tf.to_pandas()    
-    
-    def SMOTE(T, N, k):
-        # """
-        # Returns (N/100) * n_minority_samples synthetic minority samples.
-        
-        # Parameters
-        # ----------
-        # T : array-like, shape = [n_minority_samples, n_features]
-        #     Holds the minority samples
-        # N : percetange of new synthetic samples: 
-        #     n_synthetic_samples = N/100 * n_minority_samples. Can be < 100.
-        # k : int. Number of nearest neighbours. 
-        
-        # Returns
-        # -------
-        # S : array, shape = [(N/100) * n_minority_samples, n_features]
-        # """    
-        n_minority_samples, n_features = T.shape
-        
-        if N < 100:
-            #create synthetic samples only for a subset of T.
-            #TODO: select random minortiy samples
-            N = 100
-            pass
-        
-        if (N % 100) != 0:
-            raise ValueError("N must be < 100 or multiple of 100")
-        
-        N = int(N/100)
-        n_synthetic_samples = N * n_minority_samples
-        S = np.zeros(shape=(n_synthetic_samples, n_features))
-        
-        #Learn nearest neighbours
-        neigh = NearestNeighbors(n_neighbors = k)
-        neigh.fit(T)
-        
-        #Calculate synthetic samples
-        for i in range(n_minority_samples):
-            nn = neigh.kneighbors(T[i].reshape(1, -1), return_distance=False)        
-    
-            for n in range(N):
-                nn_index = choice(nn[0])
-                #NOTE: nn includes T[i], we don't want to select it 
-                while nn_index == i:
-                    nn_index = choice(nn[0])
-        
-                dif = T[nn_index] - T[i]
-                gap = np.random.random()
-                S[n + i * N, :] = T[i,:] + gap * dif[:]
-        
-        return S
-
-    out = SMOTE(np.array(train_df.loc[train_df['is_fraud']==1, ]), N=1000, k=3)
-    
-    out_1 = pd.DataFrame(out)
-    out_1.columns = train_df.columns
-    out_1['is_fraud'] = out_1['is_fraud'].astype('int')
-    
-    from time import time 
-    s = time()
-    out_0 = pd.DataFrame(SMOTE(np.array(train_df.loc[train_df['is_fraud']==0, ]), N=5000, k=3))
-    print(f'Total time = {time()-s} seconds')
-    
-    out_0.columns = train_df.columns
-    out_0['is_fraud'] = out_0['is_fraud'].astype('int')
-    
-    dat_upsample = out_1.append(out_0, ignore_index=True)
-    train_df = dat_upsample
-    
+    train_df = tf.to_pandas()      
     #### Analysis starts 
     X = train_df.drop(["transactionId", "is_fraud"], axis=1)
     Y = train_df["is_fraud"]
@@ -189,21 +115,10 @@ def train_model(train: Train, tf: Featureset("transaction_features")) -> Any:
             
             self.val_f1s.append(val_f1)
             self.val_recalls.append(val_recall)
-            self.val_precisions.append(val_precision)
-            
-            # print(f' — val_f1: {val_f1} — val_precision: {val_precision}, — val_recall: {val_recall}')
-            
-            ### Send the performance metrics to Neptune for tracking ###
-            # self.train.log_metric('Epoch End Loss', logs['loss'])
-            self.train.log_metric('Epoch End F1-score', val_f1)
-            # self.train.log_metric('Epoch End Precision', val_precision)
-            # self.train.log_metric('Epoch End Recall', val_recall)
-            
-            # if self.curFold == 4:            
-            #     ### Log Epoch End metrics values for each step in the last CV fold ###
-            #     msg = f' End of epoch {epoch} val_f1: {val_f1} — val_precision: {val_precision}, — val_recall: {val_recall}'
-            #     self.train.send_text('Epoch End Metrics (each step) for fold {self.curFold}', x=epoch, y=msg)           
-
+            self.val_precisions.append(val_precision)           
+           
+            ### Send the performance metrics to Layer to track ###
+            self.train.log_metric('Epoch End F1-score', val_f1)          
 
     ### Building a neural nets 
     def runModel(x_tr, y_tr, x_val, y_val, epos=20, my_batch_size=64):  
@@ -219,15 +134,7 @@ def train_model(train: Train, tf: Featureset("transaction_features")) -> Any:
         out = Dense(1, activation='sigmoid')(x)
         model = Model(inp, out)
         
-        return model 
-
-    # trainX, testX, trainY, testY = train_test_split(X, Y, test_size=test_size,
-    #                                                 random_state=random_state)
-
-    # Here we register input & output of the train. Layer will use
-    # this registers to extract the signature of the model and calculate the drift
-    # train.register_input(trainX)
-    # train.register_output(trainY)
+        return model    
     
     ### Preprocess the training and testing data 
     ### save 20% for final testing 
@@ -244,10 +151,6 @@ def train_model(train: Train, tf: Featureset("transaction_features")) -> Any:
     
     trainX, testY, trainY, testY = Pre_proc(X, Y)
     
-    #### register_input when data is a numpy array, it pops error saying: numpy.dtype object has no attribute value
-    # train.register_input(pd.DataFrame(trainX))
-    # train.register_output(pd.DataFrame(trainY))
-
     x_train, y_train = trainX, trainY
     x_test, y_test = testY, testY
     
@@ -258,7 +161,7 @@ def train_model(train: Train, tf: Featureset("transaction_features")) -> Any:
     
     current_folds = 5
     current_epochs = 20 ## 80
-    current_batch_size = 128 ### 16
+    current_batch_size = 16 ### 16
     
     ## macro_f1 = True for Callback 
     macro_f1 = False  
@@ -310,68 +213,6 @@ def train_model(train: Train, tf: Featureset("transaction_features")) -> Any:
         recall_cv.append(round(recall, 4))        
     
     ##### Log performance measures after CV
-    train.log_metric('Average f1 score acorss all CV sets', np.round(np.mean(f1_cv), 4))
-    
-    train.log_metric('TestSet size X',  x_test.shape[0])
-    train.log_metric('TestSet size X columns',  x_test.shape[1])
-
-    train.log_metric('TestSet size y',  len(y_test))
-    
-    class_cnt = Counter(y_test)
-    train.log_parameter(f"True test class {[k for k in class_cnt.keys()][0]}", class_cnt[[k for k in class_cnt.keys()][0]])
-    train.log_parameter(f"True test class {[k for k in class_cnt.keys()][1]}", class_cnt[[k for k in class_cnt.keys()][1]])
-    
-    train.log_parameter("Model counts", len(models))
-
-    ## Prediction the hold-out data
-    # def predict(x_test):
-    #     model_num = len(models)
-    #     for k, m in enumerate(models):
-    #         if k==0:
-    #             y_pred = m.predict(x_test, batch_size=current_batch_size)
-    #         else:
-    #             y_pred += m.predict(x_test, batch_size=current_batch_size)
-                
-    #     y_pred = y_pred / model_num    
+    train.log_metric('Average f1 score acorss all CV sets', np.round(np.mean(f1_cv), 4))    
         
-    #     return y_pred
-    
-    # y_test_pred_cat = predict(x_test)
-    # y_test_pred_cat = (np.asarray(y_test_pred_cat)).round() 
-    
-   
-    # ## cm = confusion_matrix(y_test, y_test_pred_cat)
-    # f1_final = f1_score(y_test, y_test_pred_cat)
-    
-    # #### Log final test F1 score
-    # train.log_metric('TestSet F1 score = ', round(f1_final, 4))
-    
-    return model
-
-
-
-
-    # max_depth = 3
-    # objective = 'binary:logitraw'
-    # train.log_parameter("max_depth", max_depth)
-    # train.log_parameter("objective", objective)
-
-    # # Train model
-    # param = {'max_depth': max_depth, 'objective': objective}
-    # dtrain = xgb.DMatrix(trainX, label=trainY)
-    # model_xg = xgb.train(param, dtrain)
-
-    # dtest = xgb.DMatrix(testX)
-    # preds = model_xg.predict(dtest)
-
-    # # Since the data is highly skewed, we will use the area under the
-    # # precision-recall curve (AUPRC) rather than the conventional area under
-    # # the receiver operating characteristic (AUROC). This is because the AUPRC
-    # # is more sensitive to differences between algorithms and their parameter
-    # # settings rather than the AUROC (see Davis and Goadrich,
-    # # 2006: http://pages.cs.wisc.edu/~jdavis/davisgoadrichcamera2.pdf)
-    # auprc = average_precision_score(testY, preds)
-    # train.log_metric("auprc", auprc)
-
-    # # We return the model
-    # return model_xg
+    return model    
