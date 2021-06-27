@@ -5,17 +5,16 @@ A use case of implementing the Keras macro F1 score with Layer. We will be worki
 ## What we are going to learn?
 
 - Feature Store: We are going to use SQL queries to build the `transaction` features.
-- Load `transaction` features and use it to train the `fraud_detection_model`
+- Load `transaction` features and use it to train the `macro f1-score model`
 - Experimentation tracking
- - logging `auprc` metric
- - logging parameters: `max_depth` and `objective`
+ - logging `f1` metric
 
 ## Installation & Running
 
 To check out the Layer Fraud Detection example, run:
 
 ```bash
-layer init fraud-detection
+layer init keras-fscore
 ```
 
 To run the project:
