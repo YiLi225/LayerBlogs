@@ -1,0 +1,45 @@
+# Titanic Survival Project Example
+#
+# Any directory includes an `dataset.yml` will be treated as a dataset
+# project. In this `yaml` file, we will define the attributes of our
+# featureset.
+
+apiVersion: 1
+
+type: featureset
+
+name: "passenger_features"
+description: "Passenger features from Titanic Dataset"
+
+features:
+  - name: ageband
+    description: "5 different age buckets (0, 16,32,48,64+). Filled missing age rows with avg(age)"
+    source: ageband.sql
+  - name: embarked
+    description: "The embark status of the passenger. (S=0, C=1, Q=2)"
+    source: embarked.sql
+  - name: isAlone
+    description: "Computes the family size of the passenger to identify if they are alone or not"
+    source: is_alone.sql
+  - name: fareband
+    description: "4 different fare buckets (0, 7.91, 14.454, 31+)"
+    source: fareband.sql
+  - name: sex
+    description: "Sex vector (0=Female, 1=Male)"
+    source: sex.sql
+  - name: title
+    description: "Extracts the title of the pasennger from their name (`Zabour, Miss. Hileni` > `Miss`)"
+    source: title.sql
+  - name: survived
+    description: "Whether the passenger survived or not."
+    source: survived.sql
+
+schema:
+  # All of the features above should include this primary key. It will be used to join the features
+  # together.
+  primary_keys: ["PassengerId"]
+
+materializations:
+  - type: table
+    target: layer
+    table_name: passengers

@@ -1,0 +1,20 @@
+# Titanic Survival Project Example
+#
+# In this file, we will integrate a source table from the Layer Demo
+# Snowflake database. This source table is the Titanic dataset from
+# Kaggle (https://www.kaggle.com/c/titanic/data)
+
+apiVersion: 1
+
+# Unique name of this dataset which will be used in this project to
+# refer to this dataset
+name: "titanic"
+type: source
+
+schema:
+  primary_keys: ["PassengerId"]
+
+materializations:
+  - type: table
+    target: layer
+    table_name: "titanic"
