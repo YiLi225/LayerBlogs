@@ -1,0 +1,20 @@
+# Keras Fscore with Layer 
+#
+# Any directory includes an `model.yml` will be treated as a ml model project.
+# In this `yaml` file, we will define the attributes of our model.
+
+apiVersion: 1
+
+# Name and description of our model
+name: "keras_fscore_model"
+description: "Macro Fscore in Keras"
+
+training:
+  name: "keras_fscore_model_training"
+  description: "Macro Fscore in Keras Training"
+
+  # The source model definition file with a `train_model` method
+  entrypoint: model.py
+
+  # File includes the required python libraries with their correct versions
+  environment: requirements.txt
