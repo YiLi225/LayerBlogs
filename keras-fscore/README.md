@@ -1,6 +1,6 @@
 # Keras Fscore with Layer 
 
-A use case of implementing the Keras macro F1 score with Layer. We will be working with a transaction log dataset from [Synthetic Financial Datasets For Fraud Detection](https://www.kaggle.com/ntnu-testimon/paysim1).
+A use case of implementing the Keras macro F1 score with Layer. We will be working with a transaction log dataset from [Synthetic Financial Datasets For Fraud Detection](https://www.kaggle.com/ealaxi/paysim1).
 
 ## What we are going to learn?
 
