@@ -37,4 +37,4 @@ features:
 
 materialization:
     target: layer-public-datasets
-    table_name: "titanic"
+    table_name: "passengers"
