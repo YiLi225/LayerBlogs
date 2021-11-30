@@ -15,4 +15,4 @@ type: dataset
 
 materialization:
     target: layer-public-datasets
-    table_name: "titanic"
+    table_name: "transactions"
