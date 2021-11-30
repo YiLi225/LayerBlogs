@@ -34,12 +34,7 @@ features:
     description: "Whether the passenger survived or not."
     source: survived.sql
 
-schema:
-  # All of the features above should include this primary key. It will be used to join the features
-  # together.
-  primary_keys: ["PassengerId"]
 
-materializations:
-  - type: table
-    target: layer
-    table_name: passengers
+materialization:
+    target: layer-public-datasets
+    table_name: "titanic"
