@@ -10,7 +10,7 @@ apiVersion: 1
 # Unique name of this dataset which will be used in this project to
 # refer to this dataset
 name: "transactions"
-type: source
+type: dataset
 
 materializations:
   - type: table
