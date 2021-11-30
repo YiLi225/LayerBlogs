@@ -7,6 +7,7 @@ apiVersion: 1
 
 # Name and description of our model
 name: "keras_fscore_model"
+type: model
 description: "Macro Fscore in Keras"
 
 training:
