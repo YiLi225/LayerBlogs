@@ -38,10 +38,7 @@ features:
      DEBIT=3, PAYMENT=4)"
     source: type.sql
 
-schema:
-  # All of the features above should include this primary key. It will be used to join the features
-  # together.
-  primary_keys: ["transactionId"]
 
-materializations:
-  - target: layer
+materialization:
+    target: layer-public-datasets
+    table_name: "transactions"
