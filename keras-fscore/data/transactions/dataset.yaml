@@ -15,4 +15,4 @@ type: dataset
 
 materialization:
     target: layer-public-datasets
-    table_name: "transactions"
+    table_name: "transactions_log"
